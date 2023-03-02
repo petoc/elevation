@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	lru "github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/julienschmidt/httprouter"
 	"github.com/petoc/hgt"
 )
@@ -47,7 +47,7 @@ func locatationNotFound(response *Response, location *Location) {
 func jsonLocationHandler(hgtDataDir *hgt.DataDir) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		locations := []*Location{}
-		if "GET" == r.Method {
+		if r.Method == "GET" {
 			query := r.URL.Query()
 			queryLocations := query.Get("locations")
 			if queryLocations == "" {
@@ -68,7 +68,7 @@ func jsonLocationHandler(hgtDataDir *hgt.DataDir) func(http.ResponseWriter, *htt
 				}
 				locations = append(locations, location)
 			}
-		} else if "POST" == r.Method {
+		} else if r.Method == "POST" {
 			if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
 				w.WriteHeader(http.StatusBadRequest)
 				return
